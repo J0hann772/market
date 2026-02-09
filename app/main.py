@@ -1,7 +1,8 @@
-# app/main.py
+
 import uvicorn
 from fastapi import FastAPI
 from app.api.v1.api import router
+from app.db import base
 
 
 app = FastAPI(title='Game Shop API')

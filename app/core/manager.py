@@ -1,10 +1,13 @@
 from typing import Optional
 from fastapi import Request, Depends
 from fastapi_users import BaseUserManager, IntegerIDMixin
+from fastapi_users_db_sqlalchemy.access_token import SQLAlchemyAccessTokenDatabase
+
+from app.models.access_token import AccessToken
 from app.models.user import User
 from app.core.config import settings
 from app.db.sessions import get_async_session
-from fastapi_users.db import SQLAlchemyUserDatabase
+from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -36,3 +39,6 @@ async def get_user_db(session: AsyncSession = Depends(get_async_session)):
 
 async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)
+
+async def get_access_token_db(session: AsyncSession = Depends(get_async_session)):
+    yield SQLAlchemyAccessTokenDatabase(session, AccessToken)

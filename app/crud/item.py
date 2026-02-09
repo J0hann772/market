@@ -2,9 +2,12 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
 from app.models.item import Item
 from app.schemas.item import ItemCreate, ItemUpdate
+
+
+
+
 
 
 async def create_item(db: AsyncSession, obj_in: ItemCreate):
@@ -59,3 +62,18 @@ async def update_item(db: AsyncSession, item_id: int, obj_in: ItemUpdate):
     await db.refresh(db_item)
 
     return db_item
+
+
+async def delete_item(db: AsyncSession, item_id: int):
+    query = select(Item).where(Item.id == item_id)
+    result = await db.execute(query)
+    db_item = result.scalar_one_or_none()
+
+    if not db_item:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    await db.delete(db_item)
+    await db.commit()
+    return {"detail": "Item deleted"}
+
+
